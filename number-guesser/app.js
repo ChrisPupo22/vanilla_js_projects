@@ -19,12 +19,15 @@ const game = document.querySelector("#game"),
   maxNum = document.querySelector(".max-num"),
   guessBtn = document.querySelector("#guess-btn"),
   guessInput = document.querySelector("#guess-input"),
-  message = document.querySelector(".message");
+  message = document.querySelector(".message"),
+  guessesNum = document.querySelector(".guess-number");
 
 
 // Assign UI min and max 
 minNum.textContent = min; 
 maxNum.textContent = max; 
+// Assign Guesses
+guessesNum.textContent = guessesLeft; 
 
 // Listen for guess
 guessBtn.addEventListener('click', function(e) {
@@ -43,6 +46,9 @@ guessBtn.addEventListener('click', function(e) {
         guessInput.style.borderColor = 'green'; 
         // set winning message
         setMessage(`Congrats! ${winningNum} is correct!!`, 'green')
+        guessesNum.textContent = guessesLeft
+        guessBtn.value = ('New Game')
+        
 
     } else if(guessesLeft == 1) {
         guessInput.disabled = true; 
@@ -54,10 +60,11 @@ guessBtn.addEventListener('click', function(e) {
         guessInput.style.borderColor = 'red'; 
         // active guesses
         
-        guessesLeft = guessesLeft - 1; 
+        
         console.log(guessesLeft)
         // set dynamic losing message
-        setMessage(`Oh no, you only have ${guessesLeft} guesses left...`); 
+        setMessage(`Sorry thats not the right number`); 
+        guessesNum.textContent = guessesNum.textContent -1; 
 
     }
 })
