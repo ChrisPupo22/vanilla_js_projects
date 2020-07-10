@@ -22,7 +22,6 @@ class UI {
     `;
 
     bookList.appendChild(row);
-    console.log(row);
   }
 
   showAlert(message, className) {
@@ -59,6 +58,57 @@ class UI {
   }
 }
 
+// Local Storage Class
+class Store {
+    static getBooks() {
+        let books; 
+        if (localStorage.getItem('books') === null) {
+            books = []
+        } else {
+            books = JSON.parse(localStorage.getItem('books')); 
+        }
+        return books; 
+    }
+
+    static displayBooks() {
+        const books = Store.getBooks(); 
+
+        books.forEach(function(book) {
+            const ui = new UI; 
+
+            ui.addBookToList(book); 
+        })
+
+    }
+
+    static addBook(book) {  
+        const books = Store.getBooks(); 
+
+        // adds book to the array
+        books.push(book); 
+
+        // re-set local storage with the new book
+        localStorage.setItem('books', JSON.stringify(books)); 
+        console.log(books); 
+        
+    }
+    static deleteBook(isbn) {
+        const books = Store.getBooks(); 
+        books.forEach(function(book) {
+            if(book.isbn === isbn){
+                let pos = books.indexOf(book)
+                books.splice(pos, 1); 
+            }
+        })
+        // reset the local storage
+        localStorage.setItem('books', JSON.stringify(books)); 
+    }
+}
+
+// DOM load event
+document.addEventListener('DOMContentLoaded', Store.displayBooks()); 
+
+
 // event Listener for adding a book 
 document.getElementById("book-form").addEventListener("submit", function (e) {
     // form values...
@@ -77,7 +127,11 @@ document.getElementById("book-form").addEventListener("submit", function (e) {
       ui.showAlert("please fill in required fields", "error");
     } else {
       // Add book to List
-      ui.addBookToList(book);
+      ui.addBookToList(book);  
+
+      // Add Book to local storage
+      Store.addBook(book); 
+
       // add success message
       ui.showAlert("Successfully added book!", "success");
       // clear input values
@@ -87,10 +141,14 @@ document.getElementById("book-form").addEventListener("submit", function (e) {
     e.preventDefault();
   });
 
+  // event listener for deletion of book
   document.getElementById('book-list').addEventListener("click", function (e) {
     const ui = new UI(); 
   
     ui.deleteBook(e.target); 
+
+    // delete from LS 
+    Store.deleteBook(e.target.parentElement.previousElementSibling.textContent); 
   
     e.preventDefault();
   });
